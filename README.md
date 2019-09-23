@@ -1,4 +1,4 @@
-# Backend Challenges Boilerplate - Basic Express
+# Backend Challenges Node & Express
 
 
 
@@ -13,7 +13,11 @@ res.send('Response String');
 ```
 will serve the string 'Response String'.
 Use the app.get()method to serve the string Hello Express, to GET requests matching the / root path. Be sure that your code works by looking at the logs, then see the results in your browser, clicking the button ‘Show Live’ in the Glitch UI.
-
+```javascript
+app.get("/", function(req, res){
+  res.send("Hello Express")
+})  
+```
 
 # Serve an HTML File
 We can respond with a file using the method res.sendFile(path).
@@ -40,3 +44,5 @@ Now your app should be able to serve a CSS stylesheet. From outside the public f
 ```javascript
 app.use("/",  express.static(__dirname + "/public"))
 ```
+
+
