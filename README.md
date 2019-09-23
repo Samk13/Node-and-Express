@@ -55,10 +55,31 @@ app.use("/",  express.static(__dirname + "/public"))
 Serve JSON on a Specific Route
 While an HTML server serves (you guessed it!) HTML, an API serves data. A REST (REpresentational State Transfer) API allows data exchange in a simple way, without the need for clients to know any detail about the server. The client only needs to know where the resource is (the URL), and the action it wants to perform on it (the verb). The GET verb is used when you are fetching some information, without modifying anything. These days, the preferred data format for moving information around the web is JSON. Simply put, JSON is a convenient way to represent a JavaScript object as a string, so it can be easily transmitted.
 
-Let's create a simple API by creating a route that responds with JSON at the path /json. You can do it as usual, with the app.get()method. Inside the route handler use the method res.json(), passing in an object as an argument. This method closes the request-response loop, returning the data. Behind the scenes it converts a valid JavaScript object into a string, then sets the appropriate headers to tell your browser that you are serving JSON, and sends the data back. A valid object has the usual structure {key: data}. Data can ba a number, a string, a nested object or an array. Data can also be a variable or the result of a function call; in which case it will be evaluated before being converted into a string.
+Let's create a simple API by creating a route that responds with JSON at the path /json. You can do it as usual, with the app.get()method. Inside the route handler use the method 
+```javascript
+res.json() 
+```
+, passing in an object as an argument. This method closes the request-response loop, returning the data. Behind the scenes it converts a valid JavaScript object into a string, then sets the appropriate headers to tell your browser that you are serving JSON, and sends the data back. A valid object has the usual structure ```javascript {key: data} ``` . Data can ba a number, a string, a nested object or an array. Data can also be a variable or the result of a function call; in which case it will be evaluated before being converted into a string.
 
 Serve the object
 ```javascript
 {"message": "Hello json"}
 ```
 as a response in JSON format, to the GET requests to the route /json. Then point your browser to your-app-url/json, you should see the message on the screen.
+> Solution
+```javascript
+app.get("/json", function(req, res){
+    res.json({"message": "Hello json"})
+})
+```
+
+# Use the .env File
+The **.envfile** is a hidden file that is used to pass environment variables to your application. This file is secret, no one but you can access it, and it can be used to store data that you want to keep private or hidden. For example, you can store API keys from external services or your database URI. You can also use it to store configuration options. By setting configuration options, you can change the behavior of your application, without the need to rewrite some code.
+
+The environment variables are accessible from the app as **process.env.VAR_NAME**. The process.envobject is a global Node object, and variables are passed as strings. By convention, the variable names are all uppercase, with words separated by an underscore. The .envis a shell file, so you don’t need to wrap names or values in quotes. It is also important to note that there cannot be space around the equals sign when you are assigning values to your variables, e.g. VAR_NAME=value. Usually, you will put each variable definition on a separate line.
+
+Let's add an environment variable as a configuration option. Store the variable MESSAGE_STYLE=uppercasein the .envfile. Then tell the GET /jsonroute handler that you created in the last challenge to transform the response object’s message to uppercase if ```javascript process.env.MESSAGE_STYLEequals uppercase ``` . The response object should become 
+```javascript
+{"message": "HELLO JSON"}
+```
+
