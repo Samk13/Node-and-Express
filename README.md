@@ -6,6 +6,6 @@ An HTML server usually has one or more directories that are accessible by the us
 Mount the express.static()middleware for all the requests with app.use(). The absolute path to the assets folder is __dirname + /public.
 Now your app should be able to serve a CSS stylesheet. From outside the public folder will appear mounted to the root directory. Your front-page should look a little better now!
 
-```
+```javascript
 app.use("/",  express.static(__dirname + "/public"))
 ```
