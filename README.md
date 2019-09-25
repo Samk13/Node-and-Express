@@ -155,7 +155,85 @@ req.params: {userId: '546', bookId: '6754'}
 Build an echo server, mounted at the route GET /:word/echo. Respond with a JSON object, taking the structure {echo: word}. You can find the word to be repeated at req.params.word. You can test your route from your browser's address bar, visiting some matching routes, e.g. ```your-app-rootpath/freecodecamp/echo ```
 > Solution
 ```javascript
+app.get('/:word/echo', (req, res)=>{
+  let word= req.params.word;
+  res.json({echo: word})
+})
+```
+# Get Query Parameter Input from the Client
+Another common way to get input from the client is by encoding the data after the route path, using a query string. The query string is delimited by a question mark (?), and includes field=value couples. Each couple is separated by an ampersand (&). Express can parse the data from the query string, and populate the object req.query. Some characters cannot be in URLs, they have to be encoded in a different format before you can send them. If you use the API from JavaScript, you can use specific methods to encode/decode these characters.
+```javascript
+route_path: '/library'
+actual_request_URL: '/library?userId=546&bookId=6754'
+req.query: {userId: '546', bookId: '6754'}
+```
+Build an API endpoint, mounted at GET /name. Respond with a JSON document, taking the structure ```{ name: 'firstname lastname'} ```. The first and last name parameters should be encoded in a query string e.g. ``` ?first=firstname&last=lastname ```.
 
+TIP: In the following exercise we are going to receive data from a POST request, at the same /nameroute path. If you want you can use the method ``` app.route(path).get(handler).post(handler)``` . This syntax allows you to chain different verb handlers on the same path route. You can save a bit of typing, and have cleaner code.
+> Solution
+```javascript
+app.get('/name', (req, res)=>{
+  let firstName = req.query.first;
+  let lastName = req.query.last;
+  res.json({name: `${firstName} ${lastName}`})
+})
 ```
 
+# Use body-parser to Parse POST Requests
+Besides GET there is another common http verb, it is POST. POST is the default method used to send client data with HTML forms. In the REST convention POST is used to send data to create new items in the database (a new user, or a new blog post). We don’t have a database in this project, but we are going to learn how to handle POST requests anyway.
 
+In these kind of requests the data doesn’t appear in the URL, it is hidden in the request body. This is a part of the HTML request, also called payload. Since HTML is text based, even if you don’t see the data, it doesn’t mean that they are secret. The raw content of an HTTP POST request is shown below:
+```javascript
+POST /path/subpath HTTP/1.0
+From: john@example.com
+User-Agent: someBrowser/1.0
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 20
+name=John+Doe&age=25
+```
+As you can see the body is encoded like the query string. This is the default format used by HTML forms. With Ajax we can also use JSON to be able to handle data having a more complex structure. There is also another type of encoding: multipart/form-data. This one is used to upload binary files.
+
+In this exercise we will use an urlencoded body.
+
+To parse the data coming from POST requests, you have to install a package: the body-parser. This package allows you to use a series of middleware, which can decode data in different formats. See the docs here.
+
+Install the body-parser module in your package.json. Then require it at the top of the file. Store it in a variable named bodyParser.
+
+The middleware to handle url encoded data is returned by ``` bodyParser.urlencoded({extended: false}). extended=falseis ```a configuration option that tells the parser to use the classic encoding. When using it, values can be only strings or arrays. The extended version allows more data flexibility, but it is outmatched by JSON. Pass to app.use()the function returned by the previous method call. As usual, the middleware must be mounted before all the routes which need it.
+
+> Solution
+```javascript
+let bodyParser = require("body-parser")
+
+// --> 11)  Mount the body-parser middleware  here
+app.use(bodyParser.urlencoded({ extended: false }))
+```
+
+# Get Data from POST Requests
+Mount a POST handler at the path /name. It’s the same path as before. We have prepared a form in the html frontpage. It will submit the same data of exercise 10 (Query string). If the body-parser is configured correctly, you should find the parameters in the object req.body. Have a look at the usual library example:
+```javascript
+route: POST '/library'
+urlencoded_body: userId=546&bookId=6754
+req.body: {userId: '546', bookId: '6754'}
+```
+Respond with the same JSON object as before: ```{name: 'firstname lastname'}```. Test if your endpoint works using the html form we provided in the app frontpage.
+
+Tip: There are several other http methods other than GET and POST. And by convention there is a correspondence between the http verb, and the operation you are going to execute on the server. The conventional mapping is:
+
+POST (sometimes PUT) - Create a new resource using the information sent with the request,
+
+GET - Read an existing resource without modifying it,
+
+PUT or PATCH (sometimes POST) - Update a resource using the data sent,
+
+DELETE => Delete a resource.
+
+There are also a couple of other methods which are used to negotiate a connection with the server. Except from GET, all the other methods listed above can have a payload (i.e. the data into the request body). The body-parser middleware works with these methods as well.
+> Solution
+```javascript
+app.post('/name', (req, res)=>{
+  let firstName = req.body.first;
+  let lastName = req.body.last;
+  res.json({name: `${firstName} ${lastName}`})
+})
+```
